@@ -1,0 +1,4 @@
+<launch>
+        <!-- Launch data Logger -->
+        <node pkg="suction_cup_CUHK"           type="data_logger.py"                 name="datalogger"            output="screen" />
+</launch>
