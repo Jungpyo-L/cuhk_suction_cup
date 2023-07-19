@@ -62,6 +62,7 @@ def main(args):
       P_help.startSampling()
       rospy.sleep(0.1)
 
+
       P_array = P_help.four_pressure
 
       #  Find to above the next search location wrt tool coordinate
