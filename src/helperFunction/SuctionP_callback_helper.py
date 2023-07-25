@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 import numpy as np
 import rospy
-from tae_psoc.msg import SensorPacket
-from tae_psoc.msg import cmdToPsoc
+from cuhk_suction_cup.msg import SensorPacket
+from cuhk_suction_cup.msg import cmdPacket
 from scipy import signal
 
 class P_CallbackHelp(object):
@@ -12,11 +12,11 @@ class P_CallbackHelp(object):
         self.START_CMD = 2
         self.IDLE_CMD = 3
         self.RECORD_CMD = 10
-        self.msg2Sensor = cmdToPsoc()
+        self.msg2Sensor = cmdPacket()
         # self.P_vac = -15000.0
         self.P_vac = -20000.0
 
-        self.sensorCMD_Pub = rospy.Publisher('cmdToPsoc', cmdToPsoc, queue_size=10)
+        self.sensorCMD_Pub = rospy.Publisher('cmdPacket', cmdPacket, queue_size=10)
         
         
         ## For pressure feedback
@@ -67,7 +67,7 @@ class P_CallbackHelp(object):
         # print("self.PressureOffsetBuffer: ", self.PressureOffsetBuffer)
 
         # fill in the pressure data ring buffer
-        self.thisPres = np.array(data.pSensor_Pa)
+        self.thisPres = np.array(data.data)
 
 
         self.PressureBuffer[self.P_idx] = self.thisPres - self.PressureOffset 
