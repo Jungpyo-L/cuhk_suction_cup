@@ -1,4 +1,4 @@
-#!/usr/bin/env python -W ignore::DeprecationWarning
+#!/usr/bin/env python3 -W ignore::DeprecationWarning
 
 """
 Utils for C106B grasp planning project.
