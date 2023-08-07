@@ -73,7 +73,7 @@ def main(args):
     # nachi_help.move_robot_target_pose(disengagePose)
     nachi_help.robotStart()
 
-    targetPose = [313, -65, -10 +15] # Target pose which is 15 mm above a PCB
+    targetPose = [313, -65, -10 +50] # Target pose which is 15 mm above a PCB. For a test, use 50 mm above just in case
     input("please enter to go start haptic search")
     nachi_help.move_robot_target_pose(targetPose)
     nachi_help.robotGrasping()
