@@ -1,2 +1,4 @@
 /SensorPacket
 /TipState
+/cmdToRobot
+/cmdToPC

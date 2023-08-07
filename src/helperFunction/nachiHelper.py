@@ -46,18 +46,22 @@ class NachiController(object):
     # send CMD to Robot
     def robotStart(self):
         self.cmdToRobot.cmdInput = self.cmd_START
+        self.cmdToRobot.header.stamp = rospy.Time.now()
         self.robotCMD_Pub.publish(self.cmdToRobot)
     
     def robotGrasping(self):
         self.cmdToRobot.cmdInput = self.cmd_GRASPING
+        self.cmdToRobot.header.stamp = rospy.Time.now()
         self.robotCMD_Pub.publish(self.cmdToRobot)
     
     def robotUpdating(self):
         self.cmdToRobot.cmdInput = self.cmd_UPDATING
+        self.cmdToRobot.header.stamp = rospy.Time.now()
         self.robotCMD_Pub.publish(self.cmdToRobot)
     
     def robotFinishing(self):
         self.cmdToRobot.cmdInput = self.cmd_FINISHING
+        self.cmdToRobot.header.stamp = rospy.Time.now()
         self.robotCMD_Pub.publish(self.cmdToRobot)
     
     # call back for PC state
