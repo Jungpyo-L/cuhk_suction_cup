@@ -9,6 +9,8 @@ from geometry_msgs.msg import PoseStamped
 from std_msgs.msg import Bool
 from std_msgs.msg import String
 
+from cuhk_suction_cup.msg import cmdToRobot
+
 from libnachi.srv import nachiGetTCPState
 from libnachi.msg import TipState
 
@@ -27,6 +29,40 @@ class NachiController(object):
         self.direction_list = ["x+", "x-", "y+", "y-", "z+", "z+", "w+", "w-"]
         self.tip_state_subscriber = rospy.Subscriber("TipState", TipState, self.get_tip_state)
         self.tip_state = TipState()
+
+        # Robot state
+        self.robotCMD_Pub = rospy.Publisher('cmdToRobot', cmdToRobot, queue_size=10)
+        self.cmdToRobot = cmdToRobot()
+        self.cmd_IDLE = 0
+        self.cmd_START = 1
+        self.cmd_GRASPING = 2
+        self.cmd_UPDATING = 3
+        self.cmd_FINISHING = 4
+
+        #PC state
+        rospy.Subscriber("cmdToPC", cmdToPC, self.callback_statePC)
+        self.statePC = 0
+
+    # send CMD to Robot
+    def robotStart(self):
+        self.cmdToRobot.cmdInput = self.cmd_START
+        self.robotCMD_Pub.publish(self.cmdToRobot)
+    
+    def robotGrasping(self):
+        self.cmdToRobot.cmdInput = self.cmd_GRASPING
+        self.robotCMD_Pub.publish(self.cmdToRobot)
+    
+    def robotUpdating(self):
+        self.cmdToRobot.cmdInput = self.cmd_UPDATING
+        self.robotCMD_Pub.publish(self.cmdToRobot)
+    
+    def robotFinishing(self):
+        self.cmdToRobot.cmdInput = self.cmd_FINISHING
+        self.robotCMD_Pub.publish(self.cmdToRobot)
+    
+    # call back for PC state
+    def callback_statePC(self, data):
+        self.statePC = data.cmdInput
 
     # call back function
     def get_tip_state(self, msg):

@@ -27,6 +27,9 @@ class adaptMotionHelp(object):
         self.BM_x = 0
         self.BM_y = 0
 
+        # for tansformation matrix to calculate relative haptic location
+        self.T = create_transform_matrix(np.eye(3), [0,0,0])
+
 
     def get_ObjectPoseStamped_from_T(self,T):
         thisPose = PoseStamped()
