@@ -33,6 +33,7 @@ def main(args):
   
   # experimental parameters
   timeLimit = 15
+  statePC = 0
 
   # Setup helper functions
   P_help = P_CallbackHelp() # it deals with subscription.
@@ -67,54 +68,56 @@ def main(args):
   try:
 
     # Basic test for robot arm
-    disengagePose = [313, -65, 100]
+    # disengagePose = [313, -65, 100]
     input("please enter to go disengagePose")
-    nachi_help.move_robot_target_pose(disengagePose)
+    # nachi_help.move_robot_target_pose(disengagePose)
+    nachi_help.robotStart()
 
-    targetPose = [313, -65, -10 +15]
-    input("please enter to go targetPose")
-    nachi_help.move_robot_target_pose(targetPose)
+    targetPose = [313, -65, -10 +15] # Pose 1
+    contactPose = [313, -65, -10] # Pose 2
+    input("please enter to go start haptic search")
+    nachi_help.update_pose1(targetPose)
+    nachi_help.update_pose2(contactPose)
+    nachi_help.robotGrasping()
 
-    input("please enter to start haptic search")
     suctionFlag = False
     startTime = time.time()
     iteration = 1
+
     while not suctionFlag:
-    
-      # move down and get pressure data
-      targetPose[2] -= 15
-      nachi_help.move_robot_target_pose(targetPose)
-      rospy.sleep(0.05)
-      P = P_help.four_pressure
-
-      # move up and check vacuum sealing
-      targetPose[2] +=15
-      nachi_help.move_robot_target_pose(targetPose)
-      P_check = P_help.four_pressure
-      P_vac = P_help.P_vac
-      if all(np.array(P_check)<P_vac):
-        print(f"Suction Engage Succeed from {iteration} touch")
-        suctionFlag = True
-        args.elapsedTime = startTime
+      state = nachi_help.statePC
+      if state = 0:
+        P = P_help.four_pressure
+      elif state = 1: # Check pressure
+        P = P_help.four_pressure
+        # Go to the next haptic point
+        adpt_help.T = adpt_help.get_Tmat_lateralMove(P)
+        contactPose[0] += adpt_help.T[0,3]
+        contactPose[1] += adpt_help.T[1,3]
+      elif state = 2: # Check vacuum
+        P = P_help.four_pressure
+        if all(np.array(P_check)<P_vac):
+          print(f"Suction Engage Succeed from {iteration} touch")
+          suctionFlag = True
+          args.elapsedTime = startTime
+          nachi_help.robotFinishing()
+          break
+        elif time.time()-startTime > timeLimit:
+          args.timeOverFlag = True
+          nachi_help.robotFinishing()
+          break
+        else:
+          suctionFlag = False
+          iteration +=1
+          state = 0
+          nachi.robotUpdating()
+          targetPose = contactPose + [0, 0, 15]
+          nachi_help.update_pose1(targetPose)
+          nachi_help.update_pose2(contactPose)
+          nachi.robotGrasping()
+      elif state = 3: # finishing
         break
-      elif time.time()-startTime > timeLimit:
-        args.timeOverFlag = True
-        break
-      else:
-        suctionFlag = False
-      
-      iteration +=1
 
-      
-
-      # Go to the next haptic point
-      T = adpt_help.get_Tmat_lateralMove(P)
-      # print("T: ", T)
-      targetPose[0] += T[0,3]
-      targetPose[1] += T[1,3]
-      nachi_help.move_robot_target_pose(targetPose)
-
-    nachi_help.move_robot_target_pose(disengagePose)
     # Save args
     args.suctionFlag = suctionFlag
     args.iteration = iteration
