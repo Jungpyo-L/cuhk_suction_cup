@@ -73,27 +73,29 @@ def main(args):
     # nachi_help.move_robot_target_pose(disengagePose)
     nachi_help.robotStart()
 
-    targetPose = [313, -65, -10 +15] # Pose 1
-    contactPose = [313, -65, -10] # Pose 2
+    targetPose = [313, -65, -10 +15] # Target pose which is 15 mm above a PCB
     input("please enter to go start haptic search")
-    nachi_help.update_pose1(targetPose)
-    nachi_help.update_pose2(contactPose)
+    nachi_help.move_robot_target_pose(targetPose)
     nachi_help.robotGrasping()
 
     suctionFlag = False
+    pressureCheckFlag = False
+    vacuumCheckFlag = False
     startTime = time.time()
     iteration = 1
 
-    while not suctionFlag:
+    while True:
       state = nachi_help.statePC
       if state = 0:
         P = P_help.four_pressure
       elif state = 1: # Check pressure
         P = P_help.four_pressure
         # Go to the next haptic point
-        adpt_help.T = adpt_help.get_Tmat_lateralMove(P)
-        contactPose[0] += adpt_help.T[0,3]
-        contactPose[1] += adpt_help.T[1,3]
+        if pressureCheckFlag == False:
+          adpt_help.T = adpt_help.get_Tmat_lateralMove(P)
+          targetPose[0] += adpt_help.T[0,3]
+          targetPose[1] += adpt_help.T[1,3]
+          pressureCheckFlag = True:
       elif state = 2: # Check vacuum
         P = P_help.four_pressure
         if all(np.array(P_check)<P_vac):
@@ -107,14 +109,13 @@ def main(args):
           nachi_help.robotFinishing()
           break
         else:
-          suctionFlag = False
-          iteration +=1
-          state = 0
-          nachi.robotUpdating()
-          targetPose = contactPose + [0, 0, 15]
-          nachi_help.update_pose1(targetPose)
-          nachi_help.update_pose2(contactPose)
-          nachi.robotGrasping()
+          if vacuumCheckFlag == False:
+            suctionFlag = False
+            iteration +=1
+            vacuumCheckFalg = True
+            nachi.robotUpdating()
+            nachi_help.move_robot_target_pose(targetPose)
+            nachi.robotGrasping()
       elif state = 3: # finishing
         break
 
