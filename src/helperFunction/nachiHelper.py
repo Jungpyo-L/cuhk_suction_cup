@@ -13,6 +13,7 @@ from cuhk_suction_cup.msg import cmdToRobot
 
 from libnachi.srv import nachiGetTCPState
 from libnachi.msg import TipState
+from libnachi.msg import cmdToPC
 
 
 class NachiController(object):
@@ -38,12 +39,19 @@ class NachiController(object):
         self.cmd_GRASPING = 2
         self.cmd_UPDATING = 3
         self.cmd_FINISHING = 4
+        self.cmd_COMPLETEPRESSURE = 5
 
         #PC state
         rospy.Subscriber("cmdToPC", cmdToPC, self.callback_statePC)
         self.statePC = 0
 
     # send CMD to Robot
+
+    def robotIdle(self):
+        self.cmdToRobot.cmdInput = self.cmd_IDLE
+        self.cmdToRobot.header.stamp = rospy.Time.now()
+        self.robotCMD_Pub.publish(self.cmdToRobot)
+
     def robotStart(self):
         self.cmdToRobot.cmdInput = self.cmd_START
         self.cmdToRobot.header.stamp = rospy.Time.now()
@@ -61,6 +69,11 @@ class NachiController(object):
     
     def robotFinishing(self):
         self.cmdToRobot.cmdInput = self.cmd_FINISHING
+        self.cmdToRobot.header.stamp = rospy.Time.now()
+        self.robotCMD_Pub.publish(self.cmdToRobot)
+
+    def completePressureCheck(self):
+        self.cmdToRobot.cmdInput = self.cmd_COMPLETEPRESSURE
         self.cmdToRobot.header.stamp = rospy.Time.now()
         self.robotCMD_Pub.publish(self.cmdToRobot)
     
@@ -192,20 +205,6 @@ class NachiController(object):
         self.pose_method_msg.data = "absolute"
         self.pose_method_publisher.publish(self.pose_method_msg)
         self.move_pose_publisher.publish(target_location)
-        # rospy.loginfo(target_location)
-        # rospy.sleep(0.05)
-        currentPose = self.tip_state.pose
-        pose_diff_norm = np.linalg.norm(np.array(pose[0:3])-np.array(currentPose[0:3]))
-
-        while pose_diff_norm > 1:
-            currentPose = self.tip_state.pose
-            pose_diff_norm = np.linalg.norm(np.array(pose[0:3])-np.array(currentPose[0:3]))
-            rospy.sleep(0.01)
-            
-        currentSpeed = self.tip_state.speed
-        while currentSpeed > 0.1:
-            currentSpeed = self.tip_state.speed
-            rospy.sleep(0.005)
 
 
     def move_robot_lateral(self, T, coordinate_system = "base"):
