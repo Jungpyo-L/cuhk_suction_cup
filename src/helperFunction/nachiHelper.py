@@ -21,6 +21,7 @@ class NachiController(object):
         super(NachiController).__init__()
         self._start_follow = False
         self.move_pose_publisher = rospy.Publisher(f"tcp_pose", Pose, queue_size=50)
+        self.move_pose_sync_publisher = rospy.Publisher(f"tcp_pose_sync", Pose, queue_size=50)
         self.coordinate_system_publisher = rospy.Publisher(
             f"coordinate_system", String, queue_size=1
         )
@@ -29,7 +30,9 @@ class NachiController(object):
         self.pose_method_msg = String()
         self.direction_list = ["x+", "x-", "y+", "y-", "z+", "z+", "w+", "w-"]
         self.tip_state_subscriber = rospy.Subscriber("TipState", TipState, self.get_tip_state)
+        self.tip_state_subscriber = rospy.Subscriber("RunningState", TipState, self.get_robot_state)
         self.tip_state = TipState()
+        self.robot_state = Bool()
 
         # Robot state
         self.robotCMD_Pub = rospy.Publisher('cmdToRobot', cmdToRobot, queue_size=10)
@@ -89,6 +92,13 @@ class NachiController(object):
         """
         self.tip_state = msg
 
+    def get_tip_state(self, msg):
+        """
+        Get the robot's state
+        :return:
+        bool
+        """
+        self.robot_state = msg
 
     def _keyboard_control(self):
         """
@@ -205,6 +215,40 @@ class NachiController(object):
         self.pose_method_msg.data = "absolute"
         self.pose_method_publisher.publish(self.pose_method_msg)
         self.move_pose_publisher.publish(target_location)
+
+    
+    def move_robot_target_pose_sync(self, pose, orientation = [0, 0, 180, 1]):
+        """
+        Control the robot's end_effector moving to the target pose.
+        The pose can accept Pose msg or list[x,y,z,rx,ry,rz,w] as inputs.
+        Args:
+            pose (Pose|list):
+            orientatin: [0, 0, 180] y-direction is flipped
+        Returns:
+
+        """
+        if not isinstance(pose, list) or isinstance(pose, Pose):
+            rospy.logwarn(
+                "The pose only accept ros Pose msg or list [x,y,z,rx,ry,rz,w] as inputs."
+            )
+        target_location = Pose()
+        if isinstance(pose, list):
+            target_location.position.x = pose[0]
+            target_location.position.y = pose[1]
+            target_location.position.z = pose[2]
+            target_location.orientation.x = orientation[0]
+            target_location.orientation.y = orientation[1]
+            target_location.orientation.z = orientation[2]
+            target_location.orientation.w = orientation[3]
+        else:
+            target_location = pose
+        self.pose_method_msg.data = "absolute"
+        self.pose_method_publisher.publish(self.pose_method_msg)
+        self.move_pose_sync_publisher.publish(target_location)
+
+        rospy.sleep(0.05)
+        while robot_state:
+            continue
 
 
     def move_robot_lateral(self, T, coordinate_system = "base"):
