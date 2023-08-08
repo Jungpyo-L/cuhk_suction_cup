@@ -32,7 +32,7 @@ def main(args):
   rospy.init_node('suction_run')
   
   # experimental parameters
-  timeLimit = 300
+  timeLimit = 30
   statePC = 0
 
   # Setup helper functions
@@ -96,9 +96,9 @@ def main(args):
       if V6_state == 0:
         P = P_help.four_pressure
       elif V6_state == 1: # Check pressure
-        P = P_help.four_pressure
         # Go to the next haptic point
         if pressureCheckFlag == False:
+          P = P_help.four_pressure
           adpt_help.T = adpt_help.get_Tmat_lateralMove(P)
           targetPose[0] += adpt_help.T[0,3]
           targetPose[1] += adpt_help.T[1,3]
@@ -107,6 +107,8 @@ def main(args):
           # V3 = 5
           print("HI")
           nachi_help.completePressureCheck()
+          print("updated pose: ", adpt_help.T)
+          nachi_help.move_robot_target_pose(targetPose)
       elif V6_state == 2: # Check vacuum
         P = P_help.four_pressure
         if all(np.array(P)<P_vac):
@@ -128,9 +130,8 @@ def main(args):
             # V3 = 3
             nachi_help.robotUpdating()
             print("robot V6_state updated!")
-            while V6_state != 4:
-              continue
-            nachi_help.move_robot_target_pose(targetPose)
+            # while V6_state != 4:
+            #   continue
             # V3 = 2
             nachi_help.robotGrasping()
             vacuumCheckFlag = True
