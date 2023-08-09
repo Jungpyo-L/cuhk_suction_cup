@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import numpy as np
 import rospy
 from cuhk_suction_cup.msg import SensorPacket

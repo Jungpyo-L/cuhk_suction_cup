@@ -22,7 +22,7 @@ class NachiController(object):
         super(NachiController).__init__()
         self._start_follow = False
         self.move_pose_publisher = rospy.Publisher(f"tcp_pose", Pose, queue_size=50)
-        self.move_pose_sync_publisher = rospy.Publisher(f"tcp_pose_sync", Pose, queue_size=50)
+        self.move_pose_sync_publisher = rospy.Publisher(f"tcp_pose_openNR", Pose, queue_size=50)
         self.coordinate_system_publisher = rospy.Publisher(
             f"coordinate_system", String, queue_size=1
         )
@@ -258,16 +258,17 @@ class NachiController(object):
         self.pose_method_publisher.publish(self.pose_method_msg)
         self.move_pose_sync_publisher.publish(target_location)
 
-        rospy.sleep(0.05)
-        pose_diff_norm = np.linalg.norm(np.array(Pose[0:3])-np.array(self.tip_state.pose[0:3]))
+        # rospy.sleep(0.05)
+        pose_diff_norm = np.linalg.norm(np.array(pose[0:3])-np.array(self.tip_state.pose[0:3]))
 
         while pose_diff_norm > 1:
-            pose_diff_norm = np.linalg.norm(np.array(Pose[0:3])-np.array(self.tip_state.pose[0:3]))
+            pose_diff_norm = np.linalg.norm(np.array(pose[0:3])-np.array(self.tip_state.pose[0:3]))
             continue
 
-        while self.tip_state.speed > 1:
-            continue
-
+        # while self.tip_state.speed > 1:
+        #     continue
+        # while self.robot_state:
+        #     continue
         # other method: get sync from the C++
 
     def move_robot_lateral(self, T, coordinate_system = "base"):
@@ -284,7 +285,7 @@ class NachiController(object):
         target_location = Pose()
 
         target_location.position.x += T[1,3]
-        target_locatoin.position.y += T[2,3]
+        target_location.position.y += T[2,3]
         self.pose_method_msg.data = "relative"
         self.pose_method_publisher.publish(self.pose_method_msg)
         self.move_pose_publisher.publish(target_location)
