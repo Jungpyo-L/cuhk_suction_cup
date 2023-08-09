@@ -30,7 +30,7 @@ class NachiController(object):
         self.pose_method_msg = String()
         self.direction_list = ["x+", "x-", "y+", "y-", "z+", "z+", "w+", "w-"]
         self.tip_state_subscriber = rospy.Subscriber("TipState", TipState, self.get_tip_state)
-        self.tip_state_subscriber = rospy.Subscriber("RunningState", TipState, self.get_robot_state)
+        self.robot_state_subscriber = rospy.Subscriber("RunningState", Bool, self.get_robot_state)
         self.tip_state = TipState()
         self.robot_state = Bool()
 
@@ -92,13 +92,14 @@ class NachiController(object):
         """
         self.tip_state = msg
 
-    def get_tip_state(self, msg):
+    def get_robot_state(self, msg):
         """
         Get the robot's state
         :return:
         bool
         """
-        self.robot_state = msg
+        # print(msg.data)
+        self.robot_state = msg.data
 
     def _keyboard_control(self):
         """
@@ -246,10 +247,10 @@ class NachiController(object):
         self.pose_method_publisher.publish(self.pose_method_msg)
         self.move_pose_sync_publisher.publish(target_location)
 
-        rospy.sleep(0.05)
-        while robot_state:
+        rospy.sleep(0.1)
+        while self.robot_state:
             continue
-
+        rospy.sleep(0.1)
 
     def move_robot_lateral(self, T, coordinate_system = "base"):
         """
