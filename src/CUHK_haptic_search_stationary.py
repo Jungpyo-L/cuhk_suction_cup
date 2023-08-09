@@ -32,7 +32,7 @@ def main(args):
   rospy.init_node('suction_run')
   
   # experimental parameters
-  timeLimit = 300
+  timeLimit = 15
   statePC = 0
 
   # Setup helper functions
@@ -69,19 +69,13 @@ def main(args):
 
     # Basic test for robot arm
     # disengagePose = [313, -65, 100]
-    # V3 = 0
-    nachi_help.robotIdle()
-
-    ##In case 1
     input("please enter to go disengagePose")
     # nachi_help.move_robot_target_pose(disengagePose)
-    # V3 = 1
     nachi_help.robotStart()
 
     targetPose = [313, -65, -10 +50] # Target pose which is 15 mm above a PCB. For a test, use 50 mm above just in case
     input("please enter to go start haptic search")
     nachi_help.move_robot_target_pose(targetPose)
-    # V3 = 2
     nachi_help.robotGrasping()
 
     suctionFlag = False
@@ -89,54 +83,40 @@ def main(args):
     vacuumCheckFlag = False
     startTime = time.time()
     iteration = 1
-    P_vac = adpt_help.P_vac
 
     while True:
-      V6_state = nachi_help.statePC
-      if V6_state == 0:
+      state = nachi_help.statePC
+      if state = 0:
         P = P_help.four_pressure
-      elif V6_state == 1: # Check pressure
+      elif state = 1: # Check pressure
         P = P_help.four_pressure
         # Go to the next haptic point
         if pressureCheckFlag == False:
           adpt_help.T = adpt_help.get_Tmat_lateralMove(P)
           targetPose[0] += adpt_help.T[0,3]
           targetPose[1] += adpt_help.T[1,3]
-          pressureCheckFlag = True
-          vacuumCheckFlag = False
-          # V3 = 5
-          print("HI")
-          nachi_help.completePressureCheck()
-      elif V6_state == 2: # Check vacuum
+          pressureCheckFlag = True:
+      elif state = 2: # Check vacuum
         P = P_help.four_pressure
-        if all(np.array(P)<P_vac):
+        if all(np.array(P_check)<P_vac):
           print(f"Suction Engage Succeed from {iteration} touch")
           suctionFlag = True
           args.elapsedTime = startTime
-          # V3 = 4
           nachi_help.robotFinishing()
           break
         elif time.time()-startTime > timeLimit:
           args.timeOverFlag = True
-          # V3 = 4
           nachi_help.robotFinishing()
           break
         else:
           if vacuumCheckFlag == False:
             suctionFlag = False
             iteration +=1
-            # V3 = 3
-            nachi_help.robotUpdating()
-            print("robot V6_state updated!")
-            while V6_state != 4:
-              continue
+            vacuumCheckFalg = True
+            nachi.robotUpdating()
             nachi_help.move_robot_target_pose(targetPose)
-            # V3 = 2
-            nachi_help.robotGrasping()
-            vacuumCheckFlag = True
-            pressureCheckFlag = False
-      elif V6_state == 3: # finishing
-        nachi_help.robotFinishing()
+            nachi.robotGrasping()
+      elif state = 3: # finishing
         break
 
     # Save args
