@@ -32,7 +32,7 @@ def main(args):
   rospy.init_node('suction_run')
   
   # experimental parameters
-  timeLimit = 10
+  timeLimit = 15
 
   # Setup helper functions
   P_help = P_CallbackHelp() # it deals with subscription.
@@ -71,10 +71,10 @@ def main(args):
     # nachi_help.move_robot_target_pose(disengagePose)
     # V3 = 1
     nachi_help.robotStart()
-    disEngagePose = [313, -65, 200]
+    disEngagePose = [313, -65, 120]
     nachi_help.move_robot_target_pose_sync(disEngagePose)
 
-    targetPose = [313, -65, -10 +50] # Target pose which is 15 mm above a PCB. For a test, use 50 mm above just in case
+    targetPose = [313, -65, -13 +15] # Target pose which is 15 mm above a PCB. For a test, use 50 mm above just in case
     input("please enter to go start haptic search")
     nachi_help.move_robot_target_pose_sync(targetPose)
 
@@ -85,21 +85,25 @@ def main(args):
     iteration = 1
     P_vac = adpt_help.P_vac
 
-    while !suctionFlag:
+    while not suctionFlag:
       # move down
       targetPose[2] += -15
+      print("iteration: ", iteration)
+      print("move down")
       nachi_help.move_robot_target_pose_sync(targetPose)
+
       rospy.sleep(0.05)
-      P_check = P_help.four_pressur
+      P_check = P_help.four_pressure
 
       # move up
       targetPose[2] += +15
       nachi_help.move_robot_target_pose_sync(targetPose)
+      print("move up")
 
       # Check vacuum & move to next pose
-      P = P_help.four_pressur
+      P = P_help.four_pressure
       if all(np.array(P)<P_vac):
-            print(f"Suction Engage Succeed from {iteration} touch")
+        print(f"Suction Engage Succeed from {iteration} touch")
         suctionFlag = True
         args.elapsedTime = startTime
         break
@@ -110,9 +114,11 @@ def main(args):
         adpt_help.T = adpt_help.get_Tmat_lateralMove(P)
         targetPose[0] += adpt_help.T[0,3]
         targetPose[1] += adpt_help.T[1,3]
-        iternation += 1
+        iteration += 1
         nachi_help.move_robot_target_pose_sync(targetPose)
 
+    disEngagePose = [313, -65, 120]
+    nachi_help.move_robot_target_pose_sync(disEngagePose)
     # Save args
     args.suctionFlag = suctionFlag
     args.iteration = iteration
