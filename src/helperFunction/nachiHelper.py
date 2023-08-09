@@ -48,6 +48,9 @@ class NachiController(object):
         rospy.Subscriber("cmdToPC", cmdToPC, self.callback_statePC)
         self.statePC = 0
 
+        # C++ sync state
+        self.sync = 0
+
     # send CMD to Robot
 
     def robotIdle(self):
@@ -247,10 +250,17 @@ class NachiController(object):
         self.pose_method_publisher.publish(self.pose_method_msg)
         self.move_pose_sync_publisher.publish(target_location)
 
-        rospy.sleep(0.1)
-        while self.robot_state:
+        rospy.sleep(0.05)
+        pose_diff_norm = np.linalg.norm(np.array(Pose[0:3])-np.array(self.tip_state.pose[0:3]))
+
+        while pose_diff_norm > 1:
+            pose_diff_norm = np.linalg.norm(np.array(Pose[0:3])-np.array(self.tip_state.pose[0:3]))
             continue
-        rospy.sleep(0.1)
+
+        while self.tip_state.speed > 1:
+            continue
+
+        # other method: get sync from the C++
 
     def move_robot_lateral(self, T, coordinate_system = "base"):
         """
