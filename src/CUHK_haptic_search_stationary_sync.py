@@ -102,6 +102,7 @@ def main(args):
 
       # Check vacuum & move to next pose
       P = P_help.four_pressure
+      nachi_help.iteration(iteration)
       if all(np.array(P)<P_vac):
         print(f"Suction Engage Succeed from {iteration} touch")
         suctionFlag = True
