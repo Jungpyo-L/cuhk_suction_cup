@@ -111,7 +111,7 @@ def main(args):
         args.timeOverFlag = True
         break
       else:
-        adpt_help.T = adpt_help.get_Tmat_lateralMove(P)
+        adpt_help.T = adpt_help.get_Tmat_lateralMove(P_check)
         targetPose[0] += adpt_help.T[0,3]
         targetPose[1] += adpt_help.T[1,3]
         iteration += 1
