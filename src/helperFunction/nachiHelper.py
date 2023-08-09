@@ -10,6 +10,7 @@ from std_msgs.msg import Bool
 from std_msgs.msg import String
 
 from cuhk_suction_cup.msg import cmdToRobot
+from cuhk_suction_cup.msg import iterationPacket
 
 from libnachi.srv import nachiGetTCPState
 from libnachi.msg import TipState
@@ -26,6 +27,7 @@ class NachiController(object):
             f"coordinate_system", String, queue_size=1
         )
         self.pose_method_publisher = rospy.Publisher("pose_method", String, queue_size= 1)
+        self.iteration_publisher = rospy.Publisher("iterationPacket", iterationPacket, queue_size= 1)
         self.coordinate_system_msg = String()
         self.pose_method_msg = String()
         self.direction_list = ["x+", "x-", "y+", "y-", "z+", "z+", "w+", "w-"]
@@ -33,6 +35,7 @@ class NachiController(object):
         self.robot_state_subscriber = rospy.Subscriber("RunningState", Bool, self.get_robot_state)
         self.tip_state = TipState()
         self.robot_state = Bool()
+        self.iteration = iterationPacket()
 
         # Robot state
         self.robotCMD_Pub = rospy.Publisher('cmdToRobot', cmdToRobot, queue_size=10)
@@ -103,6 +106,11 @@ class NachiController(object):
         """
         # print(msg.data)
         self.robot_state = msg.data
+    
+    def iteration(self, iteration):
+        self.iteration.data = iteration
+        self.iteration.header.stamp = rospy.time.now()
+        self.iteration_publisher.publish(self.iteration)
 
     def _keyboard_control(self):
         """

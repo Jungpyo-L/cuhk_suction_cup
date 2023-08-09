@@ -22,6 +22,7 @@ add_message_files(
  SensorPacket.msg
  cmdPacket.msg
  cmdToRobot.msg
+ iterationPacket.msg
 )
 
 ## Generate services in the 'srv' folder
