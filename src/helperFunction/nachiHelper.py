@@ -8,6 +8,7 @@ from geometry_msgs.msg import Pose
 from geometry_msgs.msg import PoseStamped
 from std_msgs.msg import Bool
 from std_msgs.msg import String
+from std_msgs.msg import Float32
 
 from cuhk_suction_cup.msg import cmdToRobot
 from cuhk_suction_cup.msg import iterationPacket
@@ -15,6 +16,7 @@ from cuhk_suction_cup.msg import iterationPacket
 from libnachi.srv import nachiGetTCPState
 from libnachi.msg import TipState
 from libnachi.msg import cmdToPC
+from libnachi.msg import SegmentationInfo
 
 
 class NachiController(object):
@@ -22,7 +24,7 @@ class NachiController(object):
         super(NachiController).__init__()
         self._start_follow = False
         self.move_pose_publisher = rospy.Publisher(f"tcp_pose", Pose, queue_size=50)
-        self.move_pose_sync_publisher = rospy.Publisher(f"tcp_pose_openNR", Pose, queue_size=50)
+        self.move_pose_sync_publisher = rospy.Publisher(f"tcp_pose_sync", Pose, queue_size=50)
         self.coordinate_system_publisher = rospy.Publisher(
             f"coordinate_system", String, queue_size=1
         )
@@ -33,9 +35,13 @@ class NachiController(object):
         self.direction_list = ["x+", "x-", "y+", "y-", "z+", "z+", "w+", "w-"]
         self.tip_state_subscriber = rospy.Subscriber("TipState", TipState, self.get_tip_state)
         self.robot_state_subscriber = rospy.Subscriber("RunningState", Bool, self.get_robot_state)
+        self.conveyor_value_subscriber = rospy.Subscriber("ConveyorValue", Float32, self.get_conveyor_value)
+        # self.grasp_info_subscriber = rospy.Subscriber("/sorting_line/nachi_left", SegmentationInfo, self.get_grasp_info)
         self.tip_state = TipState()
         self.robot_state = Bool()
         self.iteration = iterationPacket()
+        self.grasp_info = SegmentationInfo()
+        self.conveyor_value = 0;
 
         # Robot state
         self.robotCMD_Pub = rospy.Publisher('cmdToRobot', cmdToRobot, queue_size=10)
@@ -106,10 +112,27 @@ class NachiController(object):
         """
         # print(msg.data)
         self.robot_state = msg.data
-    
-    def iteration(self, iteration):
+
+    def get_grasp_info(self, msg):
+        """
+        Get the robot's state
+        :return:
+        bool
+        """
+        # print(msg.data)
+        self.grasp_info = msg
+    def get_conveyor_value(self, msg):
+        """
+        Get the robot's state
+        :return:
+        bool
+        """
+        # print(msg.data)
+        self.conveyor_value = msg.data
+
+    def update_iteration(self, iteration):
         self.iteration.data = iteration
-        self.iteration.header.stamp = rospy.time.now()
+        self.iteration.header.stamp = rospy.Time.now()
         self.iteration_publisher.publish(self.iteration)
 
     def _keyboard_control(self):
