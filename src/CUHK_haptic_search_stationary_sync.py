@@ -34,8 +34,8 @@ timeLimit = 15
 P_help = P_CallbackHelp()  # it deals with subscription.
 rospy.sleep(0.5)
 file_help = fileSaveHelp()
-adpt_help = adaptMotionHelp(d_lat=5)
-end_workspacelimit = 950
+adapt_help = adaptMotionHelp(d_lat=5)
+end_workspace_limit = 950
 
 # Set data logger
 print("Wait for the data_logger to be enabled")
@@ -82,7 +82,7 @@ def start_search(msg):
         vacuumCheckFlag = False
         startTime = time.time()
         iteration = 1
-        P_vac = adpt_help.P_vac
+        P_vac = adapt_help.P_vac
         while (nachi_help.conveyor_value - grasp_info.Register_value) < waiting_distance:
             continue
         current_value = nachi_help.conveyor_value
@@ -123,9 +123,9 @@ def start_search(msg):
                 args.timeOverFlag = True
                 break
             else:
-                adpt_help.T = adpt_help.get_Tmat_lateralMove(P_check)
-                target_pose[0] += adpt_help.T[0, 3]
-                target_pose[1] += adpt_help.T[1, 3]
+                adapt_help.T = adapt_help.get_Tmat_lateralMove(P_check)
+                target_pose[0] += adapt_help.T[0, 3]
+                target_pose[1] += adapt_help.T[1, 3]
                 iteration += 1
                 # nachi_help.move_robot_target_pose_sync(targetPose)
 
