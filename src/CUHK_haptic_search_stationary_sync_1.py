@@ -54,6 +54,7 @@ class HapticSearchSync(object):
         self.timeLimit = 15
         self.waiting_point_y = -330
         self.args = arg
+        self.waiting_point = [313, -65, 120]
         self.grasp_info_subscriber = rospy.Subscriber(
             "nachi_left", SegmentationInfo, self.start_search
         )
@@ -73,15 +74,14 @@ class HapticSearchSync(object):
             grasp_info.object_pose.pose.position.z * 1000,
         ]
         try:
-
             waiting_point = [item_location[0], self.waiting_point_y, 5 + 15]
             self.nachi_help.move_robot_target_pose_sync(waiting_point)
 
             # Target pose which is 15 mm above a PCB. For a test, use 50 mm above just in case
             waiting_distance = self.waiting_point_y - item_location[1]
 
-            suctionFlag = False
-            startTime = time.time()
+            suction_flag = False
+            start_time = time.time()
             iteration = 1
             P_vac = self.adapt_help.P_vac
             while (
@@ -90,7 +90,7 @@ class HapticSearchSync(object):
                 continue
             current_value = self.nachi_help.conveyor_value
             target_pose = [waiting_point[0], waiting_point[1], waiting_point[2] - 15]
-            while not suctionFlag:
+            while not suction_flag:
                 # move down
                 target_pose[2] += -15
                 target_pose[1] = (
@@ -123,10 +123,10 @@ class HapticSearchSync(object):
                 self.nachi_help.update_iteration(iteration)
                 if all(np.array(P) < P_vac):
                     print(f"Suction Engage Succeed from {iteration} touch")
-                    suctionFlag = True
-                    self.args.elapsedTime = startTime
+                    suction_flag = True
+                    self.args.elapsedTime = start_time
                     break
-                elif time.time() - startTime > self.timeLimit:
+                elif time.time() - start_time > self.timeLimit:
                     self.args.timeOverFlag = True
                     break
                 else:
@@ -136,10 +136,10 @@ class HapticSearchSync(object):
                     iteration += 1
                     # nachi_help.move_robot_target_pose_sync(targetPose)
 
-            Waiting_point = [313, -65, 120]
-            self.nachi_help.move_robot_target_pose_sync(Waiting_point)
+
+            self.nachi_help.move_robot_target_pose_sync(self.waiting_point)
             # Save args
-            self.args.suctionFlag = suctionFlag
+            self.args.suctionFlag = suction_flag
             self.args.iteration = iteration
             self.args.timeLimit = self.timeLimit
             # Save Init data
