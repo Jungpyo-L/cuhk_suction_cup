@@ -50,8 +50,6 @@ print("Start sampling")
 P_help.startSampling()
 rospy.sleep(0.3)
 
-dataLoggerEnable(True)  # start data logging
-
 
 def init():
     grasp_info_subscriber = rospy.Subscriber(
@@ -60,6 +58,8 @@ def init():
 
 
 def start_search(msg):
+    dataLoggerEnable(True)  # start data logging
+    rospy.sleep(0.3)
     # set biases now
     try:
         P_help.setNowAsOffset()
