@@ -85,7 +85,7 @@ class HapticSearchSync(object):
             iteration = 1
             P_vac = self.adapt_help.P_vac
             while (
-                    self.nachi_help.conveyor_value - grasp_info.Register_value
+                self.nachi_help.conveyor_value - grasp_info.Register_value
             ) < waiting_distance:
                 continue
             current_value = self.nachi_help.conveyor_value
@@ -94,7 +94,7 @@ class HapticSearchSync(object):
                 # move down
                 target_pose[2] += -15
                 target_pose[1] = (
-                        target_pose[1] + self.nachi_help.conveyor_value - current_value
+                    target_pose[1] + self.nachi_help.conveyor_value - current_value
                 )
                 current_value = self.nachi_help.conveyor_value
                 print("iteration: ", iteration)
@@ -109,7 +109,7 @@ class HapticSearchSync(object):
                 # move up
                 target_pose[2] += +15
                 target_pose[1] = (
-                        target_pose[1] + self.nachi_help.conveyor_value - current_value
+                    target_pose[1] + self.nachi_help.conveyor_value - current_value
                 )
                 current_value = self.nachi_help.conveyor_value
                 if target_pose[1] > 200:
@@ -136,7 +136,6 @@ class HapticSearchSync(object):
                     iteration += 1
                     # nachi_help.move_robot_target_pose_sync(targetPose)
 
-
             self.nachi_help.move_robot_target_pose_sync(self.waiting_point)
             # Save args
             self.args.suctionFlag = suction_flag
@@ -145,7 +144,9 @@ class HapticSearchSync(object):
             # Save Init data
             self.dataLoggerEnable(False)  # start data logging
             # args = parser.parse_args()
-            self.file_help.saveDataParams(self.args, appendTxt="mode_" + str(self.args.mode))
+            self.file_help.saveDataParams(
+                self.args, appendTxt="mode_" + str(self.args.mode)
+            )
             self.file_help.clearTmpFolder()
             self.P_help.stopSampling()
             rospy.sleep(0.5)

@@ -7,6 +7,7 @@ import numpy as np
 # R = 3x3 rotation matrix
 # t = 3x1 column vector
 
+
 def rigid_transform_3D(A, B):
     assert A.shape == B.shape
 
@@ -33,7 +34,7 @@ def rigid_transform_3D(A, B):
     H = Am @ np.transpose(Bm)
 
     # sanity check
-    #if linalg.matrix_rank(H) < 3:
+    # if linalg.matrix_rank(H) < 3:
     #    raise ValueError("rank of H = {}, expecting 3".format(linalg.matrix_rank(H)))
 
     # find rotation
@@ -43,7 +44,7 @@ def rigid_transform_3D(A, B):
     # special reflection case
     if np.linalg.det(R) < 0:
         print("det(R) < R, reflection detected!, correcting for it ...")
-        Vt[2,:] *= -1
+        Vt[2, :] *= -1
         R = Vt.T @ U.T
 
     t = -R @ centroid_A + centroid_B

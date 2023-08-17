@@ -67,8 +67,11 @@ def start_search(msg):
     except:
         print("set now as offset failed, but it's okay")
     grasp_info = msg
-    item_location = [grasp_info.object_pose.pose. position.x * 1000, grasp_info.object_pose.pose.position.y * 1000 + 30,
-                     grasp_info.object_pose.pose.position.z * 1000]
+    item_location = [
+        grasp_info.object_pose.pose.position.x * 1000,
+        grasp_info.object_pose.pose.position.y * 1000 + 30,
+        grasp_info.object_pose.pose.position.z * 1000,
+    ]
     try:
         waiting_point_y = -330
         waiting_point = [item_location[0], waiting_point_y, 5 + 15]
@@ -83,7 +86,9 @@ def start_search(msg):
         startTime = time.time()
         iteration = 1
         P_vac = adapt_help.P_vac
-        while (nachi_help.conveyor_value - grasp_info.Register_value) < waiting_distance:
+        while (
+            nachi_help.conveyor_value - grasp_info.Register_value
+        ) < waiting_distance:
             continue
         current_value = nachi_help.conveyor_value
         target_pose = [waiting_point[0], waiting_point[1], waiting_point[2] - 15]
