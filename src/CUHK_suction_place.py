@@ -85,7 +85,7 @@ class HapticSearchSync(object):
             iteration = 1
             P_vac = self.adapt_help.P_vac
             while (
-                self.nachi_help.conveyor_value - grasp_info.Register_value
+                    self.nachi_help.conveyor_value - grasp_info.Register_value
             ) < waiting_distance:
                 continue
             current_value = self.nachi_help.conveyor_value
@@ -94,7 +94,7 @@ class HapticSearchSync(object):
             # move down
             target_pose[2] += -15
             target_pose[1] = (
-                target_pose[1] + self.nachi_help.conveyor_value - current_value
+                    target_pose[1] + self.nachi_help.conveyor_value - current_value
             )
             current_value = self.nachi_help.conveyor_value
             print("iteration: ", iteration)
@@ -102,25 +102,24 @@ class HapticSearchSync(object):
 
             self.nachi_help.move_robot_target_pose_sync(target_pose)
 
-            # rospy.sleep(0.05)
-            P_check = self.P_help.four_pressure
-
             # move up
             target_pose[2] += +15
             target_pose[1] = (
-                target_pose[1] + self.nachi_help.conveyor_value - current_value
+                    target_pose[1] + self.nachi_help.conveyor_value - current_value
             )
-            current_value = self.nachi_help.conveyor_value
 
             self.nachi_help.move_robot_target_pose_sync(target_pose)
             print("move up")
 
-            rospy.sleep(1)
-
-            place_postion = [35, 353, 119]
-            self.nachi_help.move_robot_target_pose_sync(place_postion)
-
-            rospy.sleep(1)
+            # place_position = [35, 353, 119]
+            # self.nachi_help.move_robot_target_pose_sync(place_position)
+            self.nachi_help.move_robot_target_pose_sync(self.waiting_point)
+            self.nachi_help.move_robot_target_pose_sync(
+                [self.waiting_point[0], self.waiting_point[1] + 265, self.waiting_point[2]]
+                )
+            self.nachi_help.move_robot_target_pose_sync(
+                [self.waiting_point[0]-213, self.waiting_point[1] + 265, self.waiting_point[2]]
+            )
 
             self.nachi_help.move_robot_target_pose_sync(self.waiting_point)
             # Save args
