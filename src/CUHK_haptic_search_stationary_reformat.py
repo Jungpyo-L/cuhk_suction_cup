@@ -17,7 +17,7 @@ import numpy as np
 import time
 
 from cuhk_suction_cup.srv import Enable
-
+from std_msgs.msg import Bool
 from geometry_msgs.msg import Pose
 from libnachi.msg import SegmentationInfo
 from helperFunction.SuctionP_callback_helper import P_CallbackHelp
@@ -54,7 +54,7 @@ class HapticSearchSync(object):
         self.timeLimit = 15
         self.waiting_point_y = -330
         self.args = arg
-        self.waiting_point = [313, -65, 120]
+        self.default_position = [313, -65, 120]
         self.grasp_info_subscriber = rospy.Subscriber(
             "nachi_left", SegmentationInfo, self.start_search
         )
@@ -136,7 +136,7 @@ class HapticSearchSync(object):
                     iteration += 1
                     # nachi_help.move_robot_target_pose_sync(targetPose)
 
-            self.nachi_help.move_robot_target_pose_sync(self.waiting_point)
+            self.nachi_help.move_robot_target_pose_sync(self.default_position)
             # Save args
             self.args.suctionFlag = suction_flag
             self.args.iteration = iteration

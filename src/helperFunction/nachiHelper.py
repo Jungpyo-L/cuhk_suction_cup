@@ -33,6 +33,9 @@ class NachiController(object):
         self.pose_method_publisher = rospy.Publisher(
             "pose_method", String, queue_size=1
         )
+        self.suction_signal_publisher = rospy.Publisher(
+            "suction_signal", Bool, queue_size=1
+        )
         self.iteration_publisher = rospy.Publisher(
             "iterationPacket", iterationPacket, queue_size=1
         )
