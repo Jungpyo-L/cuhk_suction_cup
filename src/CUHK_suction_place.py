@@ -54,7 +54,7 @@ class HapticSearchSync(object):
         self.timeLimit = 15
         self.waiting_point_y = -330
         self.args = arg
-        self.waiting_point = [313, -65, 120]
+        self.waiting_point = [313, -55, 120]
         self.grasp_info_subscriber = rospy.Subscriber(
             "nachi_left", SegmentationInfo, self.start_search
         )
@@ -116,11 +116,17 @@ class HapticSearchSync(object):
             ## go to the bin
 
             # rospy.sleep(1)
-            target_relative_joint_pose = [30, 0, 0, 0, 0, 0]
-            self.nachi_help.joint_movement_publisher.publish(target_relative_joint_pose)
-            target_relative_joint_pose = [-30, 0, 0, 0, 0, 0]
+            target_relative_joint_pose = [110, 0, 0, 0, 0, 0]
+            self.nachi_help.move_robot_relative_target_joint_pose(target_relative_joint_pose)
+            # self.nachi_help.move_robot_relative_target_joint_pose(target_relative_joint_pose)
+            # self.nachi_help.move_robot_relative_target_joint_pose(target_relative_joint_pose)
+            # self.nachi_help.move_robot_relative_target_joint_pose(target_relative_joint_pose)
+            target_relative_joint_pose = [-110, 0, 0, 0, 0, 0]
             # rospy.sleep(1)
-            self.nachi_help.joint_movement_publisher.publish(target_relative_joint_pose)
+            self.nachi_help.move_robot_relative_target_joint_pose(target_relative_joint_pose)
+            # self.nachi_help.move_robot_relative_target_joint_pose(target_relative_joint_pose)
+            # self.nachi_help.move_robot_relative_target_joint_pose(target_relative_joint_pose)
+            # self.nachi_help.move_robot_relative_target_joint_pose(target_relative_joint_pose)
             self.nachi_help.move_robot_target_pose_sync(self.waiting_point)
 
             # Save args
