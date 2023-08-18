@@ -83,7 +83,7 @@ class HapticSearchSync(object):
             suction_flag = False
             iteration = 1
             while (
-                    self.nachi_help.conveyor_value - grasp_info.Register_value
+                self.nachi_help.conveyor_value - grasp_info.Register_value
             ) < waiting_distance:
                 continue
             current_value = self.nachi_help.conveyor_value
@@ -92,7 +92,7 @@ class HapticSearchSync(object):
             # move down
             target_pose[2] += -15
             target_pose[1] = (
-                    target_pose[1] + self.nachi_help.conveyor_value - current_value
+                target_pose[1] + self.nachi_help.conveyor_value - current_value
             )
             current_value = self.nachi_help.conveyor_value
             print("iteration: ", iteration)
@@ -103,7 +103,7 @@ class HapticSearchSync(object):
             # move up
             target_pose[2] += +15
             target_pose[1] = (
-                    target_pose[1] + self.nachi_help.conveyor_value - current_value
+                target_pose[1] + self.nachi_help.conveyor_value - current_value
             )
 
             self.nachi_help.move_robot_target_pose_sync(target_pose)
@@ -114,16 +114,14 @@ class HapticSearchSync(object):
             self.nachi_help.move_robot_target_pose_sync(self.waiting_point)
 
             ## go to the bin
-            bin_pose = Pose()
-            bin_pose.position.x = 60.0
-            # rospy.sleep(1)
-            self.nachi_help.relative_joint_movement_publisher.publish(bin_pose)
-            rospy.sleep(1.5)
-            bin_pose.position.x = -30.0
-            # rospy.sleep(1)
-            self.nachi_help.relative_joint_movement_publisher.publish(bin_pose)
-            self.nachi_help.move_robot_target_pose_sync(self.waiting_point)
 
+            # rospy.sleep(1)
+            target_relative_joint_pose = [30, 0, 0, 0, 0, 0]
+            self.nachi_help.joint_movement_publisher.publish(target_relative_joint_pose)
+            target_relative_joint_pose = [-30, 0, 0, 0, 0, 0]
+            # rospy.sleep(1)
+            self.nachi_help.joint_movement_publisher.publish(target_relative_joint_pose)
+            self.nachi_help.move_robot_target_pose_sync(self.waiting_point)
 
             # Save args
             self.args.suctionFlag = suction_flag

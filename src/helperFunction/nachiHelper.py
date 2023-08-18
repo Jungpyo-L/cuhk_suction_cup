@@ -39,8 +39,8 @@ class NachiController(object):
         self.iteration_publisher = rospy.Publisher(
             "iterationPacket", iterationPacket, queue_size=1
         )
-        self.relative_joint_movement_publisher = rospy.Publisher(
-            "relative_joint_movement", Pose, queue_size=50
+        self.joint_movement_publisher = rospy.Publisher(
+            "joint_movement", Pose, queue_size=50
         )
         self.coordinate_system_msg = String()
         self.pose_method_msg = String()
@@ -307,6 +307,54 @@ class NachiController(object):
         while pose_diff_norm > 1:
             pose_diff_norm = np.linalg.norm(
                 np.array(pose[0:3]) - np.array(self.tip_state.pose[0:3])
+            )
+            continue
+
+        # while self.tip_state.speed > 1:
+        #     continue
+        # while self.robot_state:
+        #     continue
+        # other method: get sync from the C++
+
+    def move_robot_relative_target_joint_pose(self, joint_pose):
+        """
+        Control the robot's end_effector moving to the target pose.
+        The pose can accept Pose msg or list[x,y,z,rx,ry,rz,w] as inputs.
+        Args:
+            joint_pose (list):
+            orientatin: [0, 0, 180] y-direction is flipped
+        Returns:
+
+        """
+        if not isinstance(joint_pose, list):
+            rospy.logwarn("The pose only list [x,y,z,rx,ry,rz,w] as inputs.")
+        target_joint_pose = Pose()
+        current_joint_pose = self.tip_state.joint_pose
+        target_joint_location =[
+            joint_pose[0] + current_joint_pose[0],
+            joint_pose[1] + current_joint_pose[1],
+            joint_pose[2] + current_joint_pose[2],
+            joint_pose[3] + current_joint_pose[3],
+            joint_pose[4] + current_joint_pose[4],
+            joint_pose[5] + current_joint_pose[5],
+                                ]
+        target_joint_pose.position.x = target_joint_location[0]
+        target_joint_pose.position.y = target_joint_location[1]
+        target_joint_pose.position.z = target_joint_location[2]
+        target_joint_pose.orientation.x = target_joint_location[3]
+        target_joint_pose.orientation.y = target_joint_location[4]
+        target_joint_pose.orientation.z = target_joint_location[5]
+        target_joint_pose.orientation.w = target_joint_location[5]
+
+        self.joint_movement_publisher.publish(target_joint_pose)
+        # rospy.sleep(0.05)
+        pose_diff_norm = np.linalg.norm(
+            np.array(target_joint_location[0:5]) - np.array(self.tip_state.joint_pose[0:5])
+        )
+
+        while pose_diff_norm > 1:
+            pose_diff_norm = np.linalg.norm(
+                np.array(target_joint_location[0:5]) - np.array(self.tip_state.joint_pose[0:5])
             )
             continue
 
