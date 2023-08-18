@@ -81,9 +81,7 @@ class HapticSearchSync(object):
             waiting_distance = self.waiting_point_y - item_location[1]
 
             suction_flag = False
-            start_time = time.time()
             iteration = 1
-            P_vac = self.adapt_help.P_vac
             while (
                     self.nachi_help.conveyor_value - grasp_info.Register_value
             ) < waiting_distance:
@@ -114,14 +112,19 @@ class HapticSearchSync(object):
             # place_position = [35, 353, 119]
             # self.nachi_help.move_robot_target_pose_sync(place_position)
             self.nachi_help.move_robot_target_pose_sync(self.waiting_point)
-            self.nachi_help.move_robot_target_pose_sync(
-                [self.waiting_point[0], self.waiting_point[1] + 265, self.waiting_point[2]]
-                )
-            self.nachi_help.move_robot_target_pose_sync(
-                [self.waiting_point[0]-213, self.waiting_point[1] + 265, self.waiting_point[2]]
-            )
 
+            ## go to the bin
+            bin_pose = Pose()
+            bin_pose.position.x = 60.0
+            # rospy.sleep(1)
+            self.nachi_help.relative_joint_movement_publisher.publish(bin_pose)
+            rospy.sleep(1.5)
+            bin_pose.position.x = -30.0
+            # rospy.sleep(1)
+            self.nachi_help.relative_joint_movement_publisher.publish(bin_pose)
             self.nachi_help.move_robot_target_pose_sync(self.waiting_point)
+
+
             # Save args
             self.args.suctionFlag = suction_flag
             self.args.iteration = iteration

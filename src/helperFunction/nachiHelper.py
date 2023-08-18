@@ -39,6 +39,9 @@ class NachiController(object):
         self.iteration_publisher = rospy.Publisher(
             "iterationPacket", iterationPacket, queue_size=1
         )
+        self.relative_joint_movement_publisher = rospy.Publisher(
+            "relative_joint_movement", Pose, queue_size=50
+        )
         self.coordinate_system_msg = String()
         self.pose_method_msg = String()
         self.direction_list = ["x+", "x-", "y+", "y-", "z+", "z+", "w+", "w-"]
