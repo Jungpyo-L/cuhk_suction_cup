@@ -19,6 +19,10 @@ class P_CallbackHelp(object):
 
         self.sensorCMD_Pub = rospy.Publisher("cmdPacket", cmdPacket, queue_size=10)
 
+        # callback delay test
+        self.callback_Pub = rospy.Publisher('SensorCallback', SensorPacket, queue_size=10)
+        self.callback_Pressure = SensorPacket()
+
         ## For pressure feedback
         self.Psensor_Num = 4
         self.BufferLen = 7
@@ -99,6 +103,10 @@ class P_CallbackHelp(object):
                 averagePres_dummy = final_list
 
             self.four_pressure = averagePres_dummy
+
+            # callback delay check
+            self.callback_Pressure.data = averagePres_dummy
+            self.callback_Pub.publish(self.callback_Pressure)
 
         # if averaging flag is True
         if self.startPresPWMAvg:
