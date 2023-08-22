@@ -97,8 +97,8 @@ class P_CallbackHelp(object):
             self.four_pressure = averagePres_dummy
 
             # callback delay check
-            # self.callback_Pressure.data = averagePres_dummy
-            # self.callback_Pub.publish(self.callback_Pressure)
+            self.callback_Pressure.data = averagePres_dummy
+            self.callback_Pub.publish(self.callback_Pressure)
 
     def get_P_WENS(self):
         # absolute pressures - P_atm for each sensor
