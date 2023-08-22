@@ -74,22 +74,14 @@ class P_CallbackHelp(object):
         # fill in the pressure data ring buffer
         self.thisPres = np.array(data.data)
 
-        self.PressureBuffer[self.P_idx] = self.thisPres - self.PressureOffset
+        self.PressureBuffer[self.P_idx] = self.thisPres #- self.PressureOffset
         self.P_idx += 1
-        self.PressurePWMBuffer[self.PWM_idx] = self.thisPres - self.PressureOffset
-        self.PWM_idx += 1
 
         # if buffer is filled, then set average flag to true and reset idx
         if self.P_idx == len(self.PressureBuffer):
             # averagin flag is always true now, i.e. ring buffer
             self.startPresAvg = True
             self.P_idx = 0
-
-        # if buffer is filled, then set average flag to true and reset idx
-        if self.PWM_idx == len(self.PressurePWMBuffer):
-            # averagin flag is always true now, i.e. ring buffer
-            self.startPresPWMAvg = True
-            self.PWM_idx = 0
 
         # if averaging flag is True
         if self.startPresAvg:
@@ -105,28 +97,8 @@ class P_CallbackHelp(object):
             self.four_pressure = averagePres_dummy
 
             # callback delay check
-            self.callback_Pressure.data = averagePres_dummy
-            self.callback_Pub.publish(self.callback_Pressure)
-
-        # if averaging flag is True
-        if self.startPresPWMAvg:
-            averagePresPWM_dummy = [0.0] * 4
-
-            # run stft to each pressure sensor
-            for i in range(4):
-                f, t, Zxx = signal.stft(
-                    self.PressurePWMBuffer[:, i], fs, nperseg=self.FFTbuffer_size
-                )
-                delta_f = f[1] - f[0]
-                idx = int(fPWM / delta_f)
-                self.power = abs(Zxx[idx])
-                mean_power = np.mean(self.power)
-                averagePresPWM_dummy[i] = mean_power
-
-            self.four_pressurePWM = averagePresPWM_dummy
-        # print("freq: ", f[idx])
-        # print("P4PWM: ", [abs(Zxx[idx-1]) , abs(Zxx[idx]), abs(Zxx[idx+1])] )
-        # print("abs(Zxx): ", np.mean(abs(Zxx), axis=1))
+            # self.callback_Pressure.data = averagePres_dummy
+            # self.callback_Pub.publish(self.callback_Pressure)
 
     def get_P_WENS(self):
         # absolute pressures - P_atm for each sensor

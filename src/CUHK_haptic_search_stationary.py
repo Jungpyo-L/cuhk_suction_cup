@@ -104,7 +104,7 @@ class HapticSearchSync(object):
                 self.nachi_help.move_robot_target_pose_sync(target_pose)
 
                 # rospy.sleep(0.05)
-                P_check = self.P_help.four_pressure
+                P_check = self.P_help.four_pressure - self.P_help.PressureOffset
 
                 # move up
                 target_pose[2] += +15
@@ -119,7 +119,7 @@ class HapticSearchSync(object):
 
                 # Check vacuum & move to next pose
                 # rospy.sleep(0.05)
-                P = self.P_help.four_pressure
+                P = self.P_help.four_pressure - self.P_help.PressureOffset
                 self.nachi_help.update_iteration(iteration)
                 if all(np.array(P) < P_vac):
                     print(f"Suction Engage Succeed from {iteration} touch")
