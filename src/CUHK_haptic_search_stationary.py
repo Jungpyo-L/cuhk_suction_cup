@@ -24,6 +24,7 @@ from helperFunction.SuctionP_callback_helper import P_CallbackHelp
 from helperFunction.fileSaveHelper import fileSaveHelp
 from helperFunction.adaptiveMotion import adaptMotionHelp
 from helperFunction.nachiHelper import NachiController
+from helperFunction.modbus_control import ModbusController
 import argparse
 
 
@@ -32,6 +33,7 @@ class HapticSearchSync(object):
         rospy.init_node("suction_run")
         self.nachi_help = NachiController()
         self.grasp_info = SegmentationInfo()
+        self.modbus_controller = ModbusController()
         # experimental parameters
         self.P_help = P_CallbackHelp()  # it deals with subscription.
         rospy.sleep(0.5)
@@ -39,16 +41,14 @@ class HapticSearchSync(object):
         self.adapt_help = adaptMotionHelp(d_lat=5)
 
         # Set data logger
-        print("Wait for the data_logger to be enabled")
+
+        rospy.sleep(1)
+        self.file_help.clearTmpFolder()  # clear the temporary fold    print("Wait for the data_logger to be enabled")
         rospy.wait_for_service("data_logging")
         self.dataLoggerEnable = rospy.ServiceProxy("data_logging", Enable)
-
-        self.dataLoggerEnable(False)  # reset Data Logger just in case
-        rospy.sleep(1)
-        self.file_help.clearTmpFolder()  # clear the temporary folder
+        #
+        self.dataLoggerEnable(False)  # reset Data Logger just in caseer
         print("Start sampling")
-        # start sampling pressure , bias both
-        self.P_help.startSampling()
         rospy.sleep(0.3)
         self.end_workspace_limit = 950
         self.timeLimit = 15
@@ -61,6 +61,8 @@ class HapticSearchSync(object):
 
     def start_search(self, msg):
         self.dataLoggerEnable(True)
+        self.modbus_controller.open_gas()
+        self.P_help.startSampling()
         rospy.sleep(0.3)
         try:
             self.P_help.setNowAsOffset()
@@ -113,6 +115,7 @@ class HapticSearchSync(object):
                 )
                 current_value = self.nachi_help.conveyor_value
                 if target_pose[1] > 200:
+                    self.modbus_controller.close_gas()
                     break
                 self.nachi_help.move_robot_target_pose_sync(target_pose)
                 print("move up")
@@ -136,6 +139,8 @@ class HapticSearchSync(object):
                     # self.nachi_help.move_robot_relative_target_joint_pose(target_relative_joint_pose)
                     # self.nachi_help.move_robot_relative_target_joint_pose(target_relative_joint_pose)
                     target_relative_joint_pose = [-110, 0, 0, 0, 0, 0]
+                    self.modbus_controller.close_gas()
+                    time.sleep(1)
                     # rospy.sleep(1)
                     self.nachi_help.move_robot_relative_target_joint_pose(target_relative_joint_pose)
                     # self.nachi_help.move_robot_relative_target_joint_pose(target_relative_joint_pose)
@@ -151,6 +156,7 @@ class HapticSearchSync(object):
                     target_pose[0] += self.adapt_help.T[0, 3]
                     target_pose[1] += self.adapt_help.T[1, 3]
                     iteration += 1
+                    print("target_pose", self.adapt_help.T )
                     # nachi_help.move_robot_target_pose_sync(targetPose)
 
             self.nachi_help.move_robot_target_pose_sync(self.waiting_point)
@@ -165,6 +171,7 @@ class HapticSearchSync(object):
                 self.args, appendTxt="mode_" + str(self.args.mode)
             )
             self.file_help.clearTmpFolder()
+            self.modbus_controller.close_gas()
             self.P_help.stopSampling()
             rospy.sleep(0.5)
 

@@ -39,11 +39,11 @@ class HapticSearchSync(object):
         self.adapt_help = adaptMotionHelp(d_lat=5)
 
         # Set data logger
-        print("Wait for the data_logger to be enabled")
-        rospy.wait_for_service("data_logging")
-        self.dataLoggerEnable = rospy.ServiceProxy("data_logging", Enable)
+        # print("Wait for the data_logger to be enabled")
+        # rospy.wait_for_service("data_logging")
+        # self.dataLoggerEnable = rospy.ServiceProxy("data_logging", Enable)
 
-        self.dataLoggerEnable(False)  # reset Data Logger just in case
+        # self.dataLoggerEnable(False)  # reset Data Logger just in case
         rospy.sleep(1)
         self.file_help.clearTmpFolder()  # clear the temporary folder
         print("Start sampling")
@@ -60,7 +60,7 @@ class HapticSearchSync(object):
         )
 
     def start_search(self, msg):
-        self.dataLoggerEnable(True)
+        # self.dataLoggerEnable(True)
         rospy.sleep(0.3)
         try:
             self.P_help.setNowAsOffset()
@@ -134,11 +134,8 @@ class HapticSearchSync(object):
             self.args.iteration = iteration
             self.args.timeLimit = self.timeLimit
             # Save Init data
-            self.dataLoggerEnable(False)  # start data logging
+            # self.dataLoggerEnable(False)  # start data logging
             # args = parser.parse_args()
-            self.file_help.saveDataParams(
-                self.args, appendTxt="mode_" + str(self.args.mode)
-            )
             self.file_help.clearTmpFolder()
             self.P_help.stopSampling()
             rospy.sleep(0.5)
