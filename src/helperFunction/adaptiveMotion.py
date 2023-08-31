@@ -17,7 +17,7 @@ import scipy
 
 
 class adaptMotionHelp(object):
-    def __init__(self, dP_threshold=10, dw=15, P_vac=-15000, d_lat=5, d_z=1.5e-3):
+    def __init__(self, dP_threshold=10, dw=15, P_vac=-10000, d_lat=5, d_z=1.5e-3):
         # for first performance test dw=15, d_lat = 0.5e-2, d_z= 1.5e-3
         # original dw = 3, d_lat = 0.1e-2, d_z = 0.3e-3
         self.dP_threshold = dP_threshold
@@ -178,7 +178,7 @@ class adaptMotionHelp(object):
 
         return T
 
-    def get_Tmat_lateralMove(self, P_array, weightVal=1.0):
+    def get_Tmat_lateralMove(self, P_array, weightVal=2.0):
         d_lat = self.d_lat
         dP_threshold = self.dP_threshold
 

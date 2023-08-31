@@ -180,7 +180,7 @@ class HapticSearchSync(object):
                     )
                     target_pose[0] += self.adapt_help.T[0, 3]
                     target_pose[1] += self.adapt_help.T[1, 3]
-                    target_pose[1] -= 8
+                    target_pose[1] -= 7
 
                     iteration += 1
                     print("target_pose", self.adapt_help.T)
@@ -193,8 +193,8 @@ class HapticSearchSync(object):
             self.args.timeLimit = self.timeLimit
             # Save Init data
             if self.use_dataloader:
-                # self.dataLoggerEnable(False)  # start data logging
-                # args = parser.parse_args()
+                self.dataLoggerEnable(False)  # start data logging
+                args = parser.parse_args()
                 self.file_help.saveDataParams(
                     self.args, appendTxt="mode_" + str(self.args.mode)
                 )
@@ -226,5 +226,3 @@ if __name__ == "__main__":
     args = parser.parse_args()
     haptic_search_synv = HapticSearchSync(args)
     rospy.spin()
-    if rospy.is_shutdown():
-        haptic_search_synv.dataLoggerEnable(False)

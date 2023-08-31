@@ -42,7 +42,7 @@ def main():
     msg = SensorPacket()
     msg.data = [0.0, 0.0, 0.0, 0.0]
 
-    ser = serial.Serial("/dev/ttyACM1", baudrate=115200, timeout=1, write_timeout=1)
+    ser = serial.Serial("/dev/ttyACM0", baudrate=115200, timeout=1, write_timeout=1)
     # ser = serial.Serial("/dev/ttyPressure", baudrate=115200, timeout=1, write_timeout=1)
     ser.flushInput()
 
