@@ -1,4 +1,3 @@
 /SensorPacket
 /iterationPacket
 /TipState
-/ConveyorValue
