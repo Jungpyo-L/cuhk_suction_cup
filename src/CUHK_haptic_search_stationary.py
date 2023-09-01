@@ -58,8 +58,7 @@ class HapticSearchSync(object):
         self.args = arg
         self.waiting_point = [313, -55, 120]
         self.p_check = []
-        if self.use_dataloader:
-            self.dataLoggerEnable(True)
+        self.args.pcb = 0
         self.grasp_info_subscriber = rospy.Subscriber(
             "nachi_left", SegmentationInfo, self.start_search
         )
@@ -80,9 +79,10 @@ class HapticSearchSync(object):
             return False
 
     def start_search(self, msg):
-
+        self.args.pcb += 1
         self.modbus_controller.open_gas()
         self.P_help.startSampling()
+        self.dataLoggerEnable(True)
         rospy.sleep(0.3)
         try:
             self.P_help.setNowAsOffset()
@@ -128,6 +128,7 @@ class HapticSearchSync(object):
                 rospy.sleep(0.05)
                 self.p_check = self.P_help.four_pressure - self.P_help.PressureOffset
                 print("P_check", self.p_check)
+                self.nachi_help.update_iteration(iteration)
                 # move up
                 target_pose[2] += +15
                 target_pose[1] = (
@@ -141,8 +142,6 @@ class HapticSearchSync(object):
                 print("move up")
 
                 # Check vacuum & move to next pose
-                self.nachi_help.update_iteration(iteration)
-
                 if self.is_vacuum():
                     print(f"Suction Engage Succeed from {iteration} touch")
                     suction_flag = True
@@ -196,7 +195,7 @@ class HapticSearchSync(object):
                 self.dataLoggerEnable(False)  # start data logging
                 args = parser.parse_args()
                 self.file_help.saveDataParams(
-                    self.args, appendTxt="mode_" + str(self.args.mode)
+                    self.args, appendTxt="mode_" + str(self.args.mode) + "PCB_" + str(self.args.pcb)
                 )
                 self.file_help.clearTmpFolder()
                 self.P_help.stopSampling()
@@ -218,7 +217,7 @@ if __name__ == "__main__":
         "--mode",
         type=str,
         help="label of system mode (stationary or belt)",
-        default="stationary",
+        default="belt",
     )
     parser.add_argument(
         "--step", type=int, help="step size of haptic search", default=5
