@@ -178,7 +178,7 @@ class adaptMotionHelp(object):
 
         return T
 
-    def get_Tmat_lateralMove(self, P_array, weightVal=2.0):
+    def get_Tmat_lateralMove(self, P_array, weightVal=1.5):
         d_lat = self.d_lat
         dP_threshold = self.dP_threshold
 
