@@ -62,6 +62,7 @@ class HapticSearchSync(object):
         self.args.pcb = 0
         self.successful_without_haptic = 0
         self.successful_with_haptic = 0
+        self.successful_with_hap_list = []
         self.fail = 0
         self.grasp_info_subscriber = rospy.Subscriber(
             "nachi_left", SegmentationInfo, self.start_search
@@ -155,6 +156,7 @@ class HapticSearchSync(object):
                         self.successful_without_haptic += 1
                     else:
                         self.successful_with_haptic += 1
+                        self.successful_with_hap_list.append(self.args.pcb)
                     suction_flag = True
                     self.args.elapsedTime = start_time
                     self.nachi_help.move_robot_target_pose_sync(self.waiting_point)
@@ -190,7 +192,7 @@ class HapticSearchSync(object):
                     )
                     target_pose[0] += self.adapt_help.T[0, 3]
                     target_pose[1] += self.adapt_help.T[1, 3]
-                    target_pose[1] -=8
+                    target_pose[1] -= 11
                     iteration += 1
                     print("target_pose", self.adapt_help.T)
                     # nachi_help.move_robot_target_pose_sync(targetPose)
@@ -219,6 +221,7 @@ class HapticSearchSync(object):
             print_info(
                 f"Sum: {self.args.pcb}. Success with haptic: {self.successful_with_haptic}. Success without haptic:{self.successful_without_haptic}, fail: {self.fail}"
             )
+            print(self.successful_with_hap_list)
             print("==========Suction Pressure Test complete!==========")
         except rospy.ROSInterruptException:
             return

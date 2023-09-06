@@ -30,8 +30,8 @@ class ModbusController(object):
 
 if __name__ == "__main__":
     gas_control = ModbusController()
-    # gas_control.stop_conveyor()
-    gas_control.open_gas()
-    # gas_control.close_gas()
+    gas_control.stop_conveyor()
+    # gas_control.open_gas()
+    gas_control.close_gas()
     # gas_control.start_conveyor()
     print("a")

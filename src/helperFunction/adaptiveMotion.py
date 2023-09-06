@@ -17,7 +17,7 @@ import scipy
 
 
 class adaptMotionHelp(object):
-    def __init__(self, dP_threshold=10, dw=15, P_vac=-10000, d_lat=5, d_z=1.5e-3):
+    def __init__(self, dP_threshold=40, dw=15, P_vac=-10000, d_lat=5, d_z=1.5e-3):
         # for first performance test dw=15, d_lat = 0.5e-2, d_z= 1.5e-3
         # original dw = 3, d_lat = 0.1e-2, d_z = 0.3e-3
         self.dP_threshold = dP_threshold
@@ -203,6 +203,7 @@ class adaptMotionHelp(object):
         r_p[0] = -dP_WE  # x-axis: from east to west
         r_p[1] = -dP_SN  # y-axis: from north to south
         r_p = r_p / np.linalg.norm(r_p)
+
 
         if abs(dP_WE) > dP_threshold:
             dy_lat = r_p[0] * d_lat * weightVal
