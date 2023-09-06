@@ -214,6 +214,14 @@ class adaptMotionHelp(object):
         T = self.get_Tmat_TranlateInBodyF([dx_lat, dy_lat, 0.0])
         return T
 
+    def get_Tmat_lateralMove_Random(self, d_lat = 7.5):
+        theta = np.random.rand() * 360 * np.pi / 180
+        dx_lat = np.cos(theta) * d_lat
+        dy_lat = np.sin(theta) * d_lat
+
+        T = self.get_Tmat_TranlateInBodyF([dx_lat, dy_lat, 0.0])
+        return T
+
     def get_Tmat_lateralMove_BM(self):
         dx_lat = self.BM_x[self.BM_step + 1] - self.BM_x[self.BM_step]
         dy_lat = self.BM_y[self.BM_step + 1] - self.BM_y[self.BM_step]
