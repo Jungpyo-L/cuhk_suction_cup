@@ -39,7 +39,7 @@ class HapticSearchSync(object):
         self.P_help = P_CallbackHelp()  # it deals with subscription.
         rospy.sleep(0.5)
         self.file_help = fileSaveHelp()
-        self.adapt_help = adaptMotionHelp(d_lat=5)
+        self.adapt_help = adaptMotionHelp(d_lat=args.step)
 
         # Set data logger
 
@@ -59,7 +59,7 @@ class HapticSearchSync(object):
         self.args = arg
         self.waiting_point = [313, -55, 120]
         self.p_check = []
-        self.args.pcb = 0
+        # self.args.pcb = 0
         self.successful_without_haptic = 0
         self.successful_with_haptic = 0
         self.successful_with_hap_list = []
@@ -158,7 +158,7 @@ class HapticSearchSync(object):
                         self.successful_with_haptic += 1
                         self.successful_with_hap_list.append(self.args.pcb)
                     suction_flag = True
-                    self.args.elapsedTime = start_time
+                    self.args.elapsedTime = start_time - time.time()
                     self.nachi_help.move_robot_target_pose_sync(self.waiting_point)
 
                     ## go to the bin
@@ -240,6 +240,11 @@ if __name__ == "__main__":
     parser.add_argument(
         "--step", type=int, help="step size of haptic search", default=5
     )
+    parser.add_argument(
+        "--pcb", type=int, help="the latest pcb number", default=0
+    )
     args = parser.parse_args()
     haptic_search_synv = HapticSearchSync(args)
     rospy.spin()
+
+    #  rosrun ~packagage CUHK_haptic_search_belt.py --pcb 10 --step 
