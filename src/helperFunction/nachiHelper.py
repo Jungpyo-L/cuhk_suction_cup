@@ -16,7 +16,7 @@ from cuhk_suction_cup.msg import iterationPacket
 from libnachi.srv import nachiGetTCPState
 from libnachi.msg import TipState
 from libnachi.msg import cmdToPC
-from libnachi.msg import SegmentationInfo
+from mighty_brain.msg import SegmentationInfo
 
 
 class NachiController(object):

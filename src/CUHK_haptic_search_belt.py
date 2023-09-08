@@ -19,7 +19,7 @@ import time
 from cuhk_suction_cup.srv import Enable
 
 from geometry_msgs.msg import Pose
-from libnachi.msg import SegmentationInfo
+from mighty_brain.msg import SegmentationInfo
 from helperFunction.SuctionP_callback_helper import P_CallbackHelp
 from helperFunction.fileSaveHelper import fileSaveHelp
 from helperFunction.adaptiveMotion import adaptMotionHelp
@@ -101,7 +101,7 @@ class HapticSearchSync(object):
             grasp_info.object_pose.pose.position.z * 1000,
         ]
         try:
-            waiting_point = [item_location[0], self.waiting_point_y, 6.5 + 15]
+            waiting_point = [item_location[0], self.waiting_point_y, 6 + 15]
             self.nachi_help.move_robot_target_pose_sync(waiting_point)
 
             # Target pose which is 15 mm above a PCB. For a test, use 50 mm above just in case
@@ -187,9 +187,10 @@ class HapticSearchSync(object):
                     self.args.timeOverFlag = True
                     break
                 else:
-                    self.adapt_help.T = self.adapt_help.get_Tmat_lateralMove(
-                        self.p_check
-                    )
+                    # self.adapt_help.T = self.adapt_help.get_Tmat_lateralMove(
+                    #     self.p_check
+                    # )
+                    self.adapt_help.T = self.adapt_help.get_Tmat_lateralMove_Random()
                     target_pose[0] += self.adapt_help.T[0, 3]
                     target_pose[1] += self.adapt_help.T[1, 3]
                     target_pose[1] -= 11
