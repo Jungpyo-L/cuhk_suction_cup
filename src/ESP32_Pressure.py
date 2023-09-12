@@ -26,7 +26,7 @@ CMD_in = NO_CMD
 
 
 def callback(data):
-    global CMD_in        
+    global CMD_in
     CMD_in = data.cmdInput
 
 
@@ -34,31 +34,31 @@ def main():
     global currState
     global CMD_in
 
-    rospy.init_node('ESP32_Pressure')
-    
-    #Sensor reading is published to topic 'SensorPacket'
-    pub = rospy.Publisher('SensorPacket', SensorPacket, queue_size=10)
-    rospy.Subscriber("cmdPacket",cmdPacket, callback)
-    msg = SensorPacket()
-    msg.data = [0.0, 0.0, 0.0, 0.0] 
+    rospy.init_node("ESP32_Pressure")
 
-    ser = serial.Serial("/dev/ttyACM1", baudrate=115200, timeout=1, write_timeout=1)
+    # Sensor reading is published to topic 'SensorPacket'
+    pub = rospy.Publisher("SensorPacket", SensorPacket, queue_size=10)
+    rospy.Subscriber("cmdPacket", cmdPacket, callback)
+    msg = SensorPacket()
+    msg.data = [0.0, 0.0, 0.0, 0.0]
+
+    ser = serial.Serial("/dev/ttyACM0", baudrate=115200, timeout=1, write_timeout=1)
     # ser = serial.Serial("/dev/ttyPressure", baudrate=115200, timeout=1, write_timeout=1)
     ser.flushInput()
- 
+
     while not rospy.is_shutdown():
         try:
             if currState == IDLE and CMD_in == START_CMD:
                 CMD_in = NO_CMD
-                ser.write(struct.pack('<B', ord("i")))
+                ser.write(struct.pack("<B", ord("i")))
                 rospy.sleep(0.01)
-                ser.write(struct.pack('<B', ord("s")))
+                ser.write(struct.pack("<B", ord("s")))
                 rospy.sleep(0.01)
 
                 while not CMD_in == IDLE_CMD and not rospy.is_shutdown():
                     ser_bytes = ser.readline().decode("utf-8")
                     # print("ser_bytes: ", ser_bytes)
-                    split_data = ser_bytes.split(' ')
+                    split_data = ser_bytes.split(" ")
                     first_val = split_data[0]
                     # print("first_vale: ", first_val)
                     second_val = split_data[1]
@@ -73,22 +73,23 @@ def main():
                     pub.publish(msg)
 
                 # ser.write("i" + "\r\n")
-                ser.write(struct.pack('<B', ord("i")))
+                ser.write(struct.pack("<B", ord("i")))
                 ser.flushInput()
-                rospy.sleep(0.01)            
+                rospy.sleep(0.01)
                 CMD_in = NO_CMD
                 currState = IDLE
-        
+
         except Exception as e:
             print("SensorComError: " + str(e))
             pass
     print("ESP32 Sensor Reading Done")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     try:
         print("Started!")
         main()
 
-    except rospy.ROSInterruptException: 
+    except rospy.ROSInterruptException:
         print("oops")
         pass
