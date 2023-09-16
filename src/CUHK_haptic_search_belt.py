@@ -39,7 +39,7 @@ class HapticSearchSync(object):
         self.P_help = P_CallbackHelp()  # it deals with subscription.
         rospy.sleep(0.5)
         self.file_help = fileSaveHelp()
-        self.adapt_help = adaptMotionHelp(d_lat=args.step)
+        self.adapt_help = adaptMotionHelp(d_lat=args.step,dP_threshold=28)
 
         # Set data logger
 
@@ -186,13 +186,16 @@ class HapticSearchSync(object):
                 elif time.time() - start_time > self.timeLimit:
                     self.args.timeOverFlag = True
                     break
-                else:
+                else:\
+
+
+                    
                     # self.adapt_help.T = self.adapt_help.get_Tmat_lateralMove(
                     #     self.p_check
                     # )
                     self.adapt_help.T = self.adapt_help.get_Tmat_lateralMove_Random()
-                    target_pose[0] += self.adapt_help.T[0, 3]
-                    target_pose[1] += self.adapt_help.T[1, 3]
+                    target_pose[0] += self.adapt_help.T[1, 3]
+                    target_pose[1] += self.adapt_help.T[0, 3]
                     target_pose[1] -= 11
                     iteration += 1
                     print("target_pose", self.adapt_help.T)

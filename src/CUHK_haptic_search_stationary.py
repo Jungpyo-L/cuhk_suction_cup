@@ -157,8 +157,8 @@ class HapticSearchSync(object):
                     self.adapt_help.T = self.adapt_help.get_Tmat_lateralMove(
                         self.p_check
                     )
-                    target_pose[0] += self.adapt_help.T[0, 3]
-                    target_pose[1] += self.adapt_help.T[1, 3]
+                    target_pose[0] += self.adapt_help.T[1, 3]
+                    target_pose[1] += self.adapt_help.T[0, 3]
                     iteration += 1
                     print("target_pose", self.adapt_help.T)
                     # nachi_help.move_robot_target_pose_sync(targetPose)
