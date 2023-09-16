@@ -132,7 +132,7 @@ class HapticSearchSync(object):
                     break
                 self.nachi_help.move_robot_target_pose_sync(target_pose)
 
-                rospy.sleep(0.05)
+                # rospy.sleep(0.05)
                 self.p_check = self.P_help.four_pressure - self.P_help.PressureOffset
                 print("P_check", self.p_check)
                 self.nachi_help.update_iteration(iteration)
@@ -189,7 +189,7 @@ class HapticSearchSync(object):
                 else:\
 
 
-                    
+
                     # self.adapt_help.T = self.adapt_help.get_Tmat_lateralMove(
                     #     self.p_check
                     # )
